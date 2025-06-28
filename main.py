@@ -61,9 +61,10 @@ def show_post(post_id):
     requested_post = BlogPost.query.get(post_id)
     return render_template("post.html", post=requested_post)
 
-@app.route("/new-post", methods=["GET", "POST"])
+@app.route("/new-post", methods=["GET","POST"])
 def new_post():
     form = CreatePostForm()
+    title = "New Post"
     if form.validate_on_submit():
         new_post = BlogPost(
             title=form.title.data,
@@ -75,12 +76,26 @@ def new_post():
         )
         db.session.add(new_post)
         db.session.commit()
-        return redirect(url_for("home"))
-    return render_template("make-post.html", form=form)
-# TODO: add_new_post() to create a new blog post
+        return redirect(url_for("get_all_posts"))
+    return render_template("make-post.html", form=form, title = title)
 
 # TODO: edit_post() to change an existing blog post
+@app.route('/edit-post/<int:post_id>',methods = ['GET','POST'])
+def edit_post(post_id):
+    form = CreatePostForm()
+    title = "Edit Post"
+    post = BlogPost.query.get(post_id)
+    if form.validate_on_submit():    
+        post.title = form.title.data
+        post.subtitle = form.subtitle.data
+        post.author = form.author.data
+        post.img_url = form.img_url.data
+        post.body = form.body.data
+        db.session.commit()
+        return redirect(url_for('get_all_posts'))
 
+    print(post_id)
+    return render_template("make-post.html",form = form,title = title)
 # TODO: delete_post() to remove a blog post from the database
 
 # Below is the code from previous lessons. No changes needed.
