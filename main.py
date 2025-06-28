@@ -82,9 +82,9 @@ def new_post():
 
 @app.route('/edit-post/<int:post_id>',methods = ['GET','POST'])
 def edit_post(post_id):
-    form = CreatePostForm()
     title = "Edit Post"
     post = BlogPost.query.get(post_id)
+    form = CreatePostForm(obj = post)
     if form.validate_on_submit():    
         post.title = form.title.data
         post.subtitle = form.subtitle.data
