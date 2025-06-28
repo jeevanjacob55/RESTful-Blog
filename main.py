@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, jsonify
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -79,7 +79,7 @@ def new_post():
         return redirect(url_for("get_all_posts"))
     return render_template("make-post.html", form=form, title = title)
 
-# TODO: edit_post() to change an existing blog post
+
 @app.route('/edit-post/<int:post_id>',methods = ['GET','POST'])
 def edit_post(post_id):
     form = CreatePostForm()
@@ -96,8 +96,15 @@ def edit_post(post_id):
 
     print(post_id)
     return render_template("make-post.html",form = form,title = title)
-# TODO: delete_post() to remove a blog post from the database
 
+# TODO: delete_post() to remove a blog post from the database
+@app.route('/delete-post/<int:post_id>')
+def delete_post(post_id):
+    post = BlogPost.query.get(post_id)
+    db.session.delete(post)
+    db.session.commit()
+    return redirect(url_for('get_all_posts'))
+    
 # Below is the code from previous lessons. No changes needed.
 @app.route("/about")
 def about():
